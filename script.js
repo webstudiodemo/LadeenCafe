@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
       yPercent: 22, ease: "none",
       scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
     });
-    gsap.to(".hero-copy", {
+    gsap.to(".ref-cup", { yPercent: -14, scale: 1.12, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });\n    gsap.to(".ref-word", { scale: 1.08, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });\n    gsap.to(".hero-copy", {
       yPercent: 30, opacity: .25, ease: "none",
       scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
     });
@@ -35,7 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function initEditorialIntro() {
     if (reduceMotion) return;
-    gsap.from(".statement h2", {
+    gsap.from(".ref-square", { y: 120, ease: "none", scrollTrigger: { trigger: ".statement", start: "top bottom", end: "bottom top", scrub: 1 } });\n    gsap.from(".statement h2", {
       y: 80, opacity: 0, ease: "none",
       scrollTrigger: { trigger: ".statement", start: "top 78%", end: "center 52%", scrub: 1 }
     });
