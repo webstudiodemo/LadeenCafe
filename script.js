@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
   function initLenis() {
     if (reduceMotion || !window.Lenis || !window.ScrollTrigger) return;
     try {
-      const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+      const lenis = new Lenis({ duration: .72, smoothWheel: true, wheelMultiplier: 1 });
       lenis.on("scroll", ScrollTrigger.update);
       gsap.ticker.add(time => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
@@ -63,12 +63,23 @@ window.addEventListener("DOMContentLoaded", () => {
     }, context => {
       const desktop = context.conditions.desktop;
       gsap.fromTo(".cinema-img",
-        { scale: desktop ? .62 : .84 },
         {
-          scale: 1, ease: "none",
+          scale: desktop ? .62 : .86,
+          clipPath: desktop ? "inset(10% 16% 10% 16%)" : "inset(7% 5% 7% 5%)"
+        },
+        {
+          scale: 1,
+          clipPath: "inset(0% 0% 0% 0%)",
+          ease: "none",
           scrollTrigger: {
-            trigger: ".cinema", start: "top top", end: "bottom bottom",
-            scrub: 1, invalidateOnRefresh: true
+            trigger: ".cinema",
+            start: "top top",
+            end: "bottom bottom",
+            pin: ".cinema-frame",
+            pinSpacing: false,
+            scrub: .65,
+            invalidateOnRefresh: true,
+            anticipatePin: 1
           }
         }
       );
@@ -82,7 +93,7 @@ window.addEventListener("DOMContentLoaded", () => {
         x: () => -distance(), ease: "none",
         scrollTrigger: {
           trigger: ".selection", start: "top top", end: () => "+=" + distance(),
-          pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1
+          pin: true, scrub: .65, invalidateOnRefresh: true, anticipatePin: 1
         }
       });
     });
