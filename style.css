@@ -63,3 +63,10 @@ img{max-width:100%}
   .horizontal-wrap{touch-action:pan-x pan-y}
   .event-photo{width:100%}
 }
+
+/* Seamless Turkish marquee */
+.marquee{overflow:hidden;white-space:nowrap;padding:19px 0}
+.marquee-track{display:flex!important;width:max-content!important;gap:0!important;font-family:"DM Serif Display";font-style:italic;font-size:24px;animation:marquee-seamless 22s linear infinite!important;will-change:transform}
+.marquee-track span{display:block;flex:none;padding:0;margin:0}
+@keyframes marquee-seamless{from{transform:translate3d(0,0,0)}to{transform:translate3d(-25%,0,0)}}
+@media(prefers-reduced-motion:reduce){.marquee-track{animation:none!important}}
