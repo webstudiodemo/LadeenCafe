@@ -115,10 +115,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const close = () => {
       nav.classList.remove("open");
       nav.setAttribute("aria-hidden", "true");
+      menu.setAttribute("aria-expanded", "false");
       document.body.style.overflow = "";
     };
     menu.addEventListener("click", () => {
       nav.classList.add("open");
+      menu.setAttribute("aria-expanded", "true");
       nav.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
     });
@@ -137,4 +139,23 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   initNavigation();
+
+  function initBooking() {
+    const modal=document.querySelector(".booking"), panel=modal?.querySelector(".booking-panel"), form=document.querySelector("#booking-form");
+    const date=document.querySelector("#booking-date"), time=document.querySelector("#booking-time"), guests=document.querySelector("#booking-guests");
+    const name=document.querySelector("#booking-name"), phone=document.querySelector("#booking-phone"), note=document.querySelector("#booking-note"), summary=document.querySelector("#booking-summary-text");
+    if(!modal||!panel||!form||!date)return;
+    let lastFocus=null;
+    const now=new Date(), local=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().split("T")[0]; date.min=local;
+    const updateSummary=()=>{const p=[];if(date.value)p.push(new Intl.DateTimeFormat("tr-TR",{day:"numeric",month:"long",year:"numeric"}).format(new Date(date.value+"T12:00:00")));if(time.value)p.push(time.value);if(guests.value)p.push(guests.value+" kişi");summary.textContent=p.length?p.join(" · "):"Tarih, saat ve kişi sayısını seçtiğinizde özet burada görünecek."};
+    const close=()=>{modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");lastFocus?.focus()};
+    document.querySelectorAll(".reserve-open").forEach(btn=>btn.addEventListener("click",e=>{lastFocus=e.currentTarget;modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.classList.add("modal-open");setTimeout(()=>date.focus(),50)}));
+    modal.querySelectorAll("[data-booking-close]").forEach(btn=>btn.addEventListener("click",close));
+    [date,time,guests].forEach(el=>el?.addEventListener("change",updateSummary));
+    modal.addEventListener("keydown",e=>{if(e.key==="Escape"){close();return}if(e.key!=="Tab")return;const fs=[...panel.querySelectorAll('button,input,select,textarea,a[href]')].filter(x=>!x.disabled);if(!fs.length)return;const first=fs[0],last=fs[fs.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});
+    form.addEventListener("submit",e=>{e.preventDefault();if(!form.reportValidity())return;const msg=["Merhaba Ladeen Cafe, masa rezervasyonu talebi oluşturmak istiyorum.","","Tarih: "+date.value,"Saat: "+time.value,"Kişi sayısı: "+guests.value,"Ad Soyad: "+name.value.trim(),"Telefon: "+phone.value.trim(),note.value.trim()?"Not: "+note.value.trim():""].filter(Boolean).join("\n");window.open("https://wa.me/905465481458?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer")});
+  }
+  initBooking();
+
+  document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;const nav=document.querySelector(".mobile-nav.open");if(nav){nav.classList.remove("open");nav.setAttribute("aria-hidden","true");document.querySelector(".menu")?.setAttribute("aria-expanded","false");document.body.style.overflow=""}});
 });
