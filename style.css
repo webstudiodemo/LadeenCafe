@@ -31,3 +31,11 @@ body.modal-open{overflow:hidden;touch-action:none}
 .ref-word,.poster-type{-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
 .booking-panel,.mobile-nav{scrollbar-gutter:stable}
 @media(max-width:760px){.cinema{height:175vh}.cinema-frame{height:100svh}.cinema-img{height:100svh}.booking input,.booking select,.booking textarea{font-size:16px}}
+
+@media(max-width:760px){
+  .horizontal-wrap{height:auto;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .horizontal-wrap::-webkit-scrollbar{display:none}
+  .track{display:flex;width:max-content;gap:16px;padding:0 20px 12vh;touch-action:pan-x pan-y}
+  .item{width:min(84vw,430px);flex:none;margin-bottom:0;scroll-snap-align:center}
+  .item-img{height:62svh}
+}
