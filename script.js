@@ -1,5 +1,5 @@
 // Ladeen Cafe — premium interaction system
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {\n  // Failsafe: the opening screen must never block access to the site.\n  const introFailsafe = setTimeout(() => document.querySelector(".intro")?.remove(), 3200);
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
   const intro = document.querySelector(".intro");
@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function initOpening() {
     if (reduceMotion || !window.gsap) { intro?.remove(); return; }
-    gsap.timeline({ onComplete: () => intro?.remove() })
+    gsap.timeline({ onComplete: () => { clearTimeout(introFailsafe); intro?.remove(); } })
       .from(".intro-name span", { y: 120, opacity: 0, duration: 1.05, ease: "power4.out" })
       .from(".intro-name i", { opacity: 0, y: 20, duration: .65 }, "-=.45")
       .to(".intro-line", { width: "84vw", duration: .75, ease: "power2.inOut" }, "-=.45")
@@ -121,6 +121,6 @@ window.addEventListener("DOMContentLoaded", () => {
     initPinnedReveal();
     initHorizontalScroll();
     initMouseLayer();
-  } else intro?.remove();
+  } else { clearTimeout(introFailsafe); intro?.remove(); }
   initNavigation();
 });
