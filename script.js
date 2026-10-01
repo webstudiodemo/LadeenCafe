@@ -14,28 +14,21 @@ window.addEventListener("DOMContentLoaded", () => {
       intro.remove();
       return;
     }
+    gsap.set(".intro-visual-a", { scale: 1.12, clipPath: "inset(0 0 100% 0)" });
+    gsap.set(".intro-visual-b", { scale: 1.16, clipPath: "inset(100% 0 0 0)" });
     gsap.timeline({
-      onComplete: () => {
-        window.clearTimeout(introFailsafe);
-        intro.remove();
-      }
+      defaults: { ease: "power4.inOut" },
+      onComplete: () => { window.clearTimeout(introFailsafe); intro.remove(); }
     })
-    .from(".intro-name span", { y: 110, opacity: 0, duration: 1, ease: "power4.out" })
-    .from(".intro-name i", { y: 18, opacity: 0, duration: .55 }, "-=.4")
-    .to(".intro-line", { width: "84vw", duration: .65, ease: "power2.inOut" }, "-=.35")
-    .to(intro, { yPercent: -100, duration: .9, delay: .1, ease: "power4.inOut" });
-  }
-
-  function initLenis() {
-    if (reduceMotion || !window.Lenis || !window.ScrollTrigger) return;
-    try {
-      const lenis = new Lenis({ duration: .72, smoothWheel: true, wheelMultiplier: 1 });
-      lenis.on("scroll", ScrollTrigger.update);
-      gsap.ticker.add(time => lenis.raf(time * 1000));
-      gsap.ticker.lagSmoothing(0);
-    } catch (error) {
-      console.warn("Smooth scroll disabled.", error);
-    }
+    .to(".intro-visual-a", { clipPath: "inset(0 0 0% 0)", scale: 1.04, duration: .85 })
+    .to(".intro-visual-b", { clipPath: "inset(0% 0 0 0)", scale: 1.04, duration: .7 }, "-=.5")
+    .from(".intro-overline", { y: 16, opacity: 0, duration: .45 }, "-=.4")
+    .from(".intro-name span", { yPercent: 105, opacity: 0, duration: .72 }, "-=.3")
+    .from(".intro-name i", { y: 18, opacity: 0, duration: .4 }, "-=.35")
+    .from(".intro-poster strong", { y: 30, opacity: 0, duration: .5 }, "-=.3")
+    .to(".intro-line", { width: "90vw", duration: .4, ease: "power2.out" }, "-=.35")
+    .to(".intro-visual-a", { scale: 1, duration: .55, ease: "power2.inOut" }, "-=.25")
+    .to(intro, { clipPath: "inset(0 0 100% 0)", duration: .8, ease: "power4.inOut" }, "+=.05");
   }
 
   function initScrollScenes() {
@@ -52,6 +45,9 @@ window.addEventListener("DOMContentLoaded", () => {
       scale: 1.08, ease: "none",
       scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
     });
+    gsap.from(".event-main", { yPercent: 12, ease: "none", scrollTrigger: { trigger: ".events", start: "top bottom", end: "bottom top", scrub: true } });
+    gsap.from(".event-small", { yPercent: -18, ease: "none", scrollTrigger: { trigger: ".events", start: "top bottom", end: "bottom top", scrub: true } });
+    gsap.fromTo(".event-type", { xPercent: 8 }, { xPercent: -8, ease: "none", scrollTrigger: { trigger: ".events", start: "top bottom", end: "bottom top", scrub: true } });
     gsap.from(".ref-square", {
       y: 120, ease: "none",
       scrollTrigger: { trigger: ".statement", start: "top bottom", end: "bottom top", scrub: 1 }
@@ -144,7 +140,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
-    initLenis();
     initScrollScenes();
     initMouseLayer();
   }
@@ -153,18 +148,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function initBooking() {
     const modal=document.querySelector(".booking"), panel=modal?.querySelector(".booking-panel"), form=document.querySelector("#booking-form");
-    const date=document.querySelector("#booking-date"), time=document.querySelector("#booking-time"), guests=document.querySelector("#booking-guests");
+    const service=document.querySelector("#booking-service"), date=document.querySelector("#booking-date"), time=document.querySelector("#booking-time"), guests=document.querySelector("#booking-guests");
     const name=document.querySelector("#booking-name"), phone=document.querySelector("#booking-phone"), note=document.querySelector("#booking-note"), summary=document.querySelector("#booking-summary-text");
     if(!modal||!panel||!form||!date)return;
     let lastFocus=null;
     const now=new Date(), local=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().split("T")[0]; date.min=local;
-    const updateSummary=()=>{const p=[];if(date.value)p.push(new Intl.DateTimeFormat("tr-TR",{day:"numeric",month:"long",year:"numeric"}).format(new Date(date.value+"T12:00:00")));if(time.value)p.push(time.value);if(guests.value)p.push(guests.value+" kişi");summary.textContent=p.length?p.join(" · "):"Tarih, saat ve kişi sayısını seçtiğinizde özet burada görünecek."};
+    const updateSummary=()=>{const p=[];if(service?.value)p.push(service.value);if(date.value)p.push(new Intl.DateTimeFormat("tr-TR",{day:"numeric",month:"long",year:"numeric"}).format(new Date(date.value+"T12:00:00")));if(time.value)p.push(time.value);if(guests.value)p.push(guests.value+" kişi");summary.textContent=p.length?p.join(" · "):"Tarih, saat ve kişi sayısını seçtiğinizde özet burada görünecek."};
     const close=()=>{modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");lastFocus?.focus()};
     document.querySelectorAll(".reserve-open").forEach(btn=>btn.addEventListener("click",e=>{lastFocus=e.currentTarget;modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.classList.add("modal-open");setTimeout(()=>date.focus(),50)}));
     modal.querySelectorAll("[data-booking-close]").forEach(btn=>btn.addEventListener("click",close));
-    [date,time,guests].forEach(el=>el?.addEventListener("change",updateSummary));
+    [service,date,time,guests].forEach(el=>el?.addEventListener("change",updateSummary));
     modal.addEventListener("keydown",e=>{if(e.key==="Escape"){close();return}if(e.key!=="Tab")return;const fs=[...panel.querySelectorAll('button,input,select,textarea,a[href]')].filter(x=>!x.disabled);if(!fs.length)return;const first=fs[0],last=fs[fs.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});
-    form.addEventListener("submit",e=>{e.preventDefault();if(!form.reportValidity())return;const msg=["Merhaba Ladeen Cafe, masa rezervasyonu talebi oluşturmak istiyorum.","","Tarih: "+date.value,"Saat: "+time.value,"Kişi sayısı: "+guests.value,"Ad Soyad: "+name.value.trim(),"Telefon: "+phone.value.trim(),note.value.trim()?"Not: "+note.value.trim():""].filter(Boolean).join("\n");window.open("https://wa.me/905465481458?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer")});
+    form.addEventListener("submit",e=>{e.preventDefault();if(!form.reportValidity())return;const msg=["Merhaba Ladeen Cafe, web siteniz üzerinden rezervasyon / organizasyon talebi oluşturmak istiyorum.","","Talep: "+service.value,"Tarih: "+date.value,"Saat: "+time.value,"Kişi sayısı: "+guests.value,"Ad Soyad: "+name.value.trim(),"Telefon: "+phone.value.trim(),note.value.trim()?"Not: "+note.value.trim():""].filter(Boolean).join("\n");window.open("https://wa.me/905465481458?text="+encodeURIComponent(msg),"_blank","noopener,noreferrer")});
   }
   initBooking();
 
